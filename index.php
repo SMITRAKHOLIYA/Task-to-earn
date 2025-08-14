@@ -83,7 +83,6 @@ $conn->close();
 <body>
     <div class="floating floating-1"></div>
     <div class="floating floating-2"></div>
-    <!-- hytrhyh -->
     <div class="floating floating-3"></div>
     
     <!-- Navigation Bar -->
