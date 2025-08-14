@@ -27,6 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$user_id = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT username, profile_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($row = $result->fetch_assoc()) {
+    $username = $row['username'];
+    $profile_pic = $row['profile_picture'] ?? null;
+} else {
+    // Handle error, e.g., redirect to logout
+    header("Location: logout.php");
+    exit;
+}
+
 // Get all wishes for the current child
 $child_id = $_SESSION['user_id'];
 $wishes = $conn->query("SELECT * FROM wishes WHERE child_id = $child_id ORDER BY created_at DESC")->fetch_all(MYSQLI_ASSOC);
@@ -38,14 +52,11 @@ $wishes = $conn->query("SELECT * FROM wishes WHERE child_id = $child_id ORDER BY
             <?php if (!empty($profile_pic)): ?>
                 <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile">
             <?php else: ?>
-                <div class="user-initial"><?php echo strtoupper(substr($_SESSION['username'], 0, 1)); ?></div>
+                <div class="user-initial"><?php echo strtoupper(substr($username, 0, 1)); ?></div>
             <?php endif; ?>
             <div>
-                <div class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
-                <div class="role">Child</div>
-                <?php if ($parent_info): ?>
-                    <div class="role">Parent: <?php echo htmlspecialchars($parent_info); ?></div>
-                <?php endif; ?>
+                <div class="username"><?php echo htmlspecialchars($username); ?></div>
+                <div class="role">child</div>
             </div>
         </div>
         
