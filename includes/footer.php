@@ -1,0 +1,11 @@
+<footer class="footer">
+    <div class="footer-bottom">
+        <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        <p>&copy; 2023 Task to Earn. All rights reserved.</p>
+    </div>
+</footer>
