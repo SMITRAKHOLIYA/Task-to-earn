@@ -1,10 +1,11 @@
 <?php
+
 // dashboard_child.php
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
 redirectIfNotChild();
 
-session_start(); // Ensure session is started
+// session_start(); // Ensure session is started
 
 // Initialize notifications array
 if (!isset($_SESSION['notifications'])) {

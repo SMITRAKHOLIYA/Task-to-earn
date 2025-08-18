@@ -1,34 +1,37 @@
-// assets/js/script.js
-// Role selection
-function selectRole(role) {
-    document.getElementById('role').value = role;
-    document.querySelectorAll('.role-option').forEach(el => {
-        el.classList.remove('selected');
-    });
-    document.getElementById(role + '-option').classList.add('selected');
-}
-
 // Initialize role selection
 document.addEventListener('DOMContentLoaded', function() {
-    // Default to admin selection
-    selectRole('admin');
+    // Role selection
+    if (document.getElementById('admin-option')) {
+        selectRole('admin');
+    }
     
-    // Show notification if exists
-    const notification = document.getElementById('success-notification');
-    if (notification) {
+    // Auto-hide notifications
+    const notifications = document.querySelectorAll('.notification.show');
+    notifications.forEach(notification => {
         setTimeout(() => {
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }, 500);
-        
-        // Create confetti effect
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    });
+    
+    // Confetti effect for success
+    if (document.getElementById('success-notification')) {
         createConfetti();
     }
 });
 
-// Create confetti effect
+function selectRole(role) {
+    const roleInput = document.getElementById('role');
+    if (roleInput) roleInput.value = role;
+    
+    document.querySelectorAll('.role-option').forEach(el => {
+        el.classList.remove('selected');
+    });
+    
+    const option = document.getElementById(role + '-option');
+    if (option) option.classList.add('selected');
+}
+
 function createConfetti() {
     const container = document.body;
     const colors = ['#6c5ce7', '#00cec9', '#fdcb6e', '#e17055', '#00b894'];

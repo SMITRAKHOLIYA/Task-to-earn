@@ -1,74 +1,7 @@
 <?php
 session_start();
-
-// Database Configuration
-$servername = "localhost";
-$username = "root";
-$password = "root";
-$dbname = "task_to_earn";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Handle logout
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header("Location: index.php");
-    exit;
-}
-
-// Handle login
-$login_error = "";
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
-    $role = $_POST['role'];
-    
-    if (empty($username) || empty($password)) {
-        $login_error = "Please enter both username and password";
-    } else {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            
-            // Verify password and role
-            if (password_verify($password, $user['password'])) {
-                if ($user['role'] == $role) {
-                    // Successful login
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['username'] = $user['username'];
-                    $_SESSION['role'] = $user['role'];
-                    $_SESSION['points'] = $user['points'];
-                    
-                    // Redirect to homepage
-                    header("Location: index.php");
-                    exit;
-                } else {
-                    // Role mismatch
-                    $login_error = "This account is registered as a " . $user['role'] . " account. Please select the correct role.";
-                }
-            } else {
-                // Incorrect password
-                $login_error = "Incorrect password. Please try again.";
-            }
-        } else {
-            // User not found
-            $login_error = "Username not found. Please check your username or register.";
-        }
-    }
-}
-
-// Close connection
-$conn->close();
+require_once 'includes/config.php';
+require_once 'includes/auth.php';
 ?>
 
 <!DOCTYPE html>
@@ -106,11 +39,11 @@ $conn->close();
                     <a href="<?= $dashboardLink ?>" class="btn btn-outline">
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
-                    <a href="index.php?logout=1" class="btn">
+                    <a href="logout.php" class="btn">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 <?php else: ?>
-                    <a href="#" id="login-toggle" class="btn btn-outline">
+                    <a href="login.php" class="btn btn-outline">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a>
                 <?php endif; ?>
@@ -118,64 +51,21 @@ $conn->close();
         </div>
     </nav>
     
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Login to Task to Earn</h2>
-            
-            <?php if ($login_error): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i> <?php echo $login_error; ?>
-                </div>
-            <?php endif; ?>
-            
-            <form method="POST">
-                <div class="form-group">
-                    <label for="login-username">Username</label>
-                    <input type="text" id="login-username" name="username" class="form-control" required placeholder="Enter your username">
-                </div>
-                
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" name="password" class="form-control" required placeholder="Enter your password">
-                </div>
-                
-                <div class="form-group">
-                    <label>Login As</label>
-                    <div class="role-selector">
-                        <div class="role-option selected" id="admin-option" onclick="selectRole('admin')">
-                            <i class="fas fa-user-shield"></i>
-                            <span>Admin</span>
-                        </div>
-                        <div class="role-option" id="child-option" onclick="selectRole('child')">
-                            <i class="fas fa-child"></i>
-                            <span>Child</span>
-                        </div>
-                    </div>
-                    <input type="hidden" id="role" name="role" value="admin">
-                </div>
-                
-                <button type="submit" name="login" class="btn login-btn">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-                
-                <div class="login-footer">
-                    <p>Don't have an account? <a href="#" id="register-toggle">Register as Admin</a></p>
-                </div>
-            </form>
-        </div>
-    </div>
-    
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <h1 class="hero-title">Transform Tasks <span class="gradient-text">Into Rewards</span></h1>
             <p class="hero-subtitle">A futuristic platform that motivates children to complete tasks and earn exciting rewards</p>
             <div class="hero-buttons">
-                <a href="#" id="hero-login" class="btn btn-primary">
-                    <i class="fas fa-rocket"></i> Get Started
-                </a>
+                <?php if (!isset($_SESSION['user_id'])): ?>
+                    <a href="login.php" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Get Started
+                    </a>
+                <?php else: ?>
+                    <a href="<?= $dashboardLink ?>" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Go to Dashboard
+                    </a>
+                <?php endif; ?>
                 <a href="#features" class="btn btn-outline">
                     <i class="fas fa-binoculars"></i> Explore Features
                 </a>
@@ -197,7 +87,7 @@ $conn->close();
         </div>
     </section>
     
-    <!-- Features Section -->
+ <!-- Features Section -->
     <section class="features" id="features">
         <div class="section-header">
             <h2>Why Choose <span class="gradient-text">Task to Earn</span></h2>
@@ -365,7 +255,6 @@ $conn->close();
         const modal = document.getElementById("loginModal");
         const loginBtns = document.querySelectorAll("#login-toggle, #hero-login, #cta-login");
         const closeBtn = document.querySelector(".close");
-        const registerToggle = document.getElementById("register-toggle");
         
         // Open modal when any login button is clicked
         loginBtns.forEach(btn => {
@@ -387,17 +276,9 @@ $conn->close();
             }
         });
         
-        // Register toggle
-        registerToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            alert("Admin registration coming soon!");
-        });
-        
         // Initialize role selection
         document.addEventListener('DOMContentLoaded', function() {
             selectRole('admin');
-            
-            // Animate particles
             animateParticles();
         });
         
@@ -406,34 +287,16 @@ $conn->close();
             const particles = document.querySelectorAll('.particle');
             
             particles.forEach((particle, index) => {
-                // Random initial position
                 const x = Math.random() * 100;
                 const y = Math.random() * 100;
-                
                 particle.style.left = `${x}%`;
                 particle.style.top = `${y}%`;
-                
-                // Animate with different speeds
                 const duration = 15 + Math.random() * 10;
                 particle.style.animation = `float ${duration}s infinite ease-in-out ${index * 2}s`;
             });
         }
         
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                document.querySelector(targetId).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-        
-        // Animation for floating elements
+        // Floating animations
         const floaters = document.querySelectorAll('.floating');
         floaters.forEach((floater, index) => {
             const duration = 20 + Math.random() * 10;
