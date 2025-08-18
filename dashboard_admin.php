@@ -108,15 +108,18 @@ $completionSql->bind_param("i", $admin_id);
 $completionSql->execute();
 $completions = $completionSql->get_result()->fetch_all(MYSQLI_ASSOC);
 
-// Get profile picture
-$profile_pic = null;
-$stmt = $conn->prepare("SELECT profile_picture FROM users WHERE id = ?");
-$stmt->bind_param("i", $admin_id);
+$user_id = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT username, profile_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $profile_pic = $user['profile_picture'];
+if ($row = $result->fetch_assoc()) {
+    $username = $row['username'];
+    $profile_pic = $row['profile_picture'] ?? null;
+} else {
+    // Handle error, e.g., redirect to logout
+    header("Location: logout.php");
+    exit;
 }
 ?>
 
@@ -125,19 +128,13 @@ if ($result->num_rows > 0) {
 <div class="dashboard">
     <div class="sidebar">
         <div class="user-card">
-            <div class="avatar-container">
-                <?php if (!empty($profile_pic)): ?>
-                    <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile" id="user-avatar">
-                <?php else: ?>
-                    <div class="user-initial" id="user-avatar"><?php echo strtoupper(substr($_SESSION['username'], 0, 1)); ?></div>
-                <?php endif; ?>
-                <div class="upload-overlay" id="upload-overlay">
-                    <i class="fas fa-camera"></i>
-                </div>
-            </div>
-            <input type="file" id="avatar-upload" name="avatar" accept="image/*" style="display: none;">
+            <?php if (!empty($profile_pic)): ?>
+                <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile">
+            <?php else: ?>
+                <div class="user-initial"><?php echo strtoupper(substr($username, 0, 1)); ?></div>
+            <?php endif; ?>
             <div>
-                <div class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
+                <div class="username"><?php echo htmlspecialchars($username); ?></div>
                 <div class="role">Admin</div>
             </div>
         </div>

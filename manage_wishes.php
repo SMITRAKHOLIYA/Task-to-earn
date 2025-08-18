@@ -5,6 +5,20 @@ require_once 'includes/auth.php';
 require_once 'includes/header.php';
 redirectIfNotAdmin();
 
+$user_id = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT username, profile_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($row = $result->fetch_assoc()) {
+    $username = $row['username'];
+    $profile_pic = $row['profile_picture'] ?? null;
+} else {
+    // Handle error, e.g., redirect to logout
+    header("Location: logout.php");
+    exit;
+}
+
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_wish'])) {
