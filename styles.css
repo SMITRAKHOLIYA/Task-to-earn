@@ -1,16 +1,16 @@
 :root {
-    --primary: #6366f1; /* indigo-500 */
-    --secondary: #8b5cf6; /* violet-500 */
-    --accent: #14b8a6; /* teal-500 */
-    --dark: #1f2937; /* gray-800 */
-    --light: #f3f4f6; /* gray-100 */
-    --success: #10b981; /* emerald-500 */
-    --warning: #f59e0b; /* amber-500 */
-    --danger: #ef4444; /* red-500 */
-    --card-bg: rgba(243, 244, 246, 0.1); /* adjusted for light alpha */
+    --primary: #6366f1;
+    --secondary: #8b5cf6;
+    --accent: #14b8a6;
+    --dark: #1f2937;
+    --light: #ffffff; /* Changed to white */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --card-bg: rgba(243, 244, 246, 0.1);
     --glass-bg: rgba(243, 244, 246, 0.05);
     --glass-border: rgba(243, 244, 246, 0.1);
-    --glass-shadow: 0 8px 32px 0 rgba(17, 24, 39, 0.15); /* adjusted for new dark */
+    --glass-shadow: 0 8px 32px 0 rgba(17, 24, 39, 0.15);
 }
 
 * {
@@ -19,6 +19,7 @@
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-decoration: none;
+    color: white; /* Added default white color */
 }
 
 body {
@@ -29,10 +30,87 @@ body {
     overflow-x: hidden;
 }
 
-.container {
-    max-width: 1800px;
-    margin: 0 auto;
+/* Add white color to specific elements that might not inherit */
+.container,
+header,
+.logo,
+.user-info,
+.dashboard,
+.sidebar,
+.stats-card,
+.nav-menu,
+.nav-item,
+.nav-link,
+.main-content,
+.section-title,
+.card-grid,
+.card,
+.card-header,
+.card-title,
+.card-subtitle,
+.card-body,
+.card-footer,
+.alert,
+.login-footer,
+.login-container,
+.login-header,
+.form-group,
+.form-control,
+.role-selector,
+.role-option,
+.feature-card,
+.step,
+.testimonial-card,
+.footer,
+.footer-content,
+.footer-brand,
+.footer-links,
+.footer-column,
+.modal-content {
+    color: white;
 }
+
+/* Ensure form elements have white text */
+.form-control {
+    color: white !important;
+}
+
+/* Ensure placeholders are visible */
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Specific selector for child_id input */
+#child_id {
+    color: white !important;
+}
+
+/* Ensure all buttons have white text */
+.btn,
+.logout-btn,
+.login-btn {
+    color: white;
+}
+
+/* Adjust status badges for better contrast */
+.status-pending,
+.status-completed,
+.difficulty-badge,
+.badge {
+    color: white !important;
+}
+
+/* Additional contrast improvements */
+.status-pending {
+    background: rgba(245, 158, 11, 0.4);
+}
+
+.status-completed {
+    background: rgba(16, 185, 129, 0.4);
+}
+
+/* Rest of your existing CSS remains the same below this point */
+/* ... (all your existing CSS code) ... */
 
 /* Header Styles */
 header {
@@ -1735,7 +1813,9 @@ section {
     border-radius: 20px;
     box-shadow: var(--glass-shadow);
     border: 1px solid var(--glass-border);
+    color: #ffffff; /* added font color white */
 }
+
 
 .login-header {
     text-align: center;

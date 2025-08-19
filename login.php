@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             <div class="role-selector">
                 <div class="role-option selected" id="admin-option" onclick="selectRole('admin')">
                     <i class="fas fa-user-shield"></i>
-                    <span>Admin</span>
+                    <span>Parent</span>
                 </div>
                 <div class="role-option" id="child-option" onclick="selectRole('child')">
                     <i class="fas fa-child"></i>
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         </button>
         
         <div class="login-footer">
-            <p>Don't have an account? <a href="register.php">Register as Admin</a></p>
+            <p>Don't have an account? <a href="register.php">Register as Parent</a></p>
             <p><a href="#">Forgot password?</a></p>
         </div>
     </form>
