@@ -69,7 +69,7 @@ include 'includes/header.php';
             <?php endif; ?>
             <div>
                 <div class="username"><?php echo htmlspecialchars($username); ?></div>
-                <div class="role">Admin</div>
+                <div class="role">Parent</div>
             </div>
         </div>
         

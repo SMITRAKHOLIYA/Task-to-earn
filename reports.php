@@ -154,7 +154,7 @@ $averagePoints = count($pointsDistribution) > 0
             <?php endif; ?>
             <div>
                 <div class="username"><?php echo htmlspecialchars($username); ?></div>
-                <div class="role">Admin</div>
+                <div class="role">Parent</div>
             </div>
         </div>
         
@@ -199,42 +199,43 @@ $averagePoints = count($pointsDistribution) > 0
     </div>
     
     <div class="main-content">
+        <!-- Child Selection Button in Top Left Corner -->
+        <div class="child-select-button-container">
+            <button class="child-select-button" onclick="toggleChildDropdown()">
+                <i class="fas fa-child"></i>
+                Select Child
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div class="child-dropdown" id="childDropdown">
+                <form method="GET" action="reports.php">
+                    <input type="hidden" name="report_type" value="<?php echo $report_type; ?>">
+                    <div class="child-option <?= !$selected_child_id ? 'selected' : '' ?>">
+                        <input type="radio" name="child_id" value="all" id="child_all" 
+                            <?= !$selected_child_id ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <label for="child_all">All Children</label>
+                    </div>
+                    <?php foreach ($children as $child): ?>
+                        <div class="child-option <?= $selected_child_id == $child['id'] ? 'selected' : '' ?>">
+                            <input type="radio" name="child_id" value="<?= $child['id'] ?>" 
+                                id="child_<?= $child['id'] ?>" 
+                                <?= $selected_child_id == $child['id'] ? 'checked' : '' ?> 
+                                onchange="this.form.submit()">
+                            <label for="child_<?= $child['id'] ?>"><?= htmlspecialchars($child['username']) ?></label>
+                        </div>
+                    <?php endforeach; ?>
+                </form>
+            </div>
+        </div>
+        
         <div class="section-title">
             <h2>
                 <i class="fas fa-chart-line"></i>
                 Children Reports
             </h2>
-        </div>
-        
-        <!-- Child Selection Card -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <i class="fas fa-child"></i>
-                    Select Child
-                </div>
-            </div>
-            <div class="card-body">
-                <form method="GET" action="reports.php" class="child-select-form">
-                    <input type="hidden" name="report_type" value="<?php echo $report_type; ?>">
-                    <div class="form-group">
-                        <label for="childSelect">View Reports For:</label>
-                        <select id="childSelect" name="child_id" class="form-control">
-                            <option value="all">All Children</option>
-                            <?php foreach ($children as $child): ?>
-                                <option value="<?= $child['id'] ?>" 
-                                    <?= $selected_child_id == $child['id'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($child['username']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Show Reports</button>
-                </form>
-                <div class="current-selection">
-                    <i class="fas fa-user"></i> Currently Viewing: 
-                    <strong><?= htmlspecialchars($selected_child_name) ?></strong>
-                </div>
+            <div class="current-selection">
+                <i class="fas fa-user"></i> Viewing: 
+                <strong><?= htmlspecialchars($selected_child_name) ?></strong>
             </div>
         </div>
         
@@ -452,6 +453,78 @@ $averagePoints = count($pointsDistribution) > 0
 </div>
 
 <style>
+    /* Child selection button and dropdown */
+    .child-select-button-container {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .child-select-button {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .child-select-button:hover {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+    }
+    
+    .child-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        padding: 10px;
+        z-index: 100;
+        min-width: 200px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .child-dropdown.show {
+        display: block;
+    }
+    
+    .child-option {
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .child-option:hover {
+        background: rgba(108, 92, 231, 0.2);
+    }
+    
+    .child-option.selected {
+        background: rgba(108, 92, 231, 0.3);
+    }
+    
+    .child-option input[type="radio"] {
+        margin: 0;
+    }
+    
+    .current-selection {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
     /* Report type selector buttons */
     .report-type-selector {
         display: flex;
@@ -529,6 +602,23 @@ $averagePoints = count($pointsDistribution) > 0
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Toggle child dropdown
+    function toggleChildDropdown() {
+        const dropdown = document.getElementById('childDropdown');
+        dropdown.classList.toggle('show');
+    }
+    
+    // Close the dropdown if clicked outside
+    window.onclick = function(event) {
+        if (!event.target.matches('.child-select-button') && 
+            !event.target.closest('.child-select-button')) {
+            const dropdown = document.getElementById('childDropdown');
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    }
+    
     // Points distribution chart
     const ctx = document.getElementById('pointsChart').getContext('2d');
     const labels = <?php echo json_encode(array_column($pointsDistribution, 'username')); ?>;

@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         
         <div class="login-footer">
             <p>Don't have an account? <a href="register.php">Register as Parent</a></p>
-            <p><a href="#">Forgot password?</a></p>
+            <!-- <p><a href="#">Forgot password?</a></p> -->
         </div>
     </form>
 </div>

@@ -103,7 +103,7 @@ $children = $result->fetch_all(MYSQLI_ASSOC);
             <?php endif; ?>
             <div>
                 <div class="username"><?php echo htmlspecialchars($username); ?></div>
-                <div class="role">Admin</div>
+                <div class="role">Parent</div>
             </div>
         </div>
         

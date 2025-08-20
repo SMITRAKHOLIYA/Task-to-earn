@@ -90,6 +90,12 @@ $completedTasks = $completedStmt->get_result()->fetch_assoc()['completed'];
 
 $completionPercentage = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
 
+// Get total activities (task completions)
+$activitiesStmt = $conn->prepare("SELECT COUNT(*) as total FROM task_completions tc JOIN users u ON tc.user_id = u.id WHERE u.parent_id = ?");
+$activitiesStmt->bind_param("i", $admin_id);
+$activitiesStmt->execute();
+$totalActivities = $activitiesStmt->get_result()->fetch_assoc()['total'];
+
 $taskSuggestions = [
     "Clean your room" => "Easy",
     "Read for 30 minutes" => "Medium",
@@ -136,7 +142,7 @@ if ($row = $result->fetch_assoc()) {
             <?php endif; ?>
             <div>
                 <div class="username"><?php echo htmlspecialchars($username); ?></div>
-                <div class="role">Admin</div>
+                <div class="role">Parent</div>
             </div>
         </div>
         
@@ -194,6 +200,39 @@ if ($row = $result->fetch_assoc()) {
             </div>
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
+        
+        <!-- Summary Statistics Section -->
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value"><?php echo count($children); ?></div>
+                    <div class="stat-label">Total Children</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value"><?php echo $totalTasks; ?></div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value"><?php echo $totalActivities; ?></div>
+                    <div class="stat-label">Activities</div>
+                </div>
+            </div>
+        </div>
         
         <div class="section-title">
             <h2>
@@ -538,6 +577,60 @@ if ($row = $result->fetch_assoc()) {
 </script>
 
 <style>
+    .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+    }
+    
+    .stat-info {
+        flex: 1;
+    }
+    
+    .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: var(--text);
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
     .avatar-container {
         position: relative;
         width: 60px;

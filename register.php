@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
             </div>
             <button type="submit" class="btn register-btn">
-                <i class="fas fa-user-plus"></i> Register as Admin
+                <i class="fas fa-user-plus"></i> Register as Parent
             </button>
         </form>
         
