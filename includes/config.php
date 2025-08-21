@@ -1,9 +1,9 @@
 <?php
 // includes/config.php
-$host  = "sql100.infinityfree.com";
-$username = "if0_39730861";
-$password = "DjDvvUzYp1n7V";
-$dbname = "if0_39730861_task_to_earn";
+$host  = "localhost";
+$username = "root";
+$password = "root";
+$dbname = "task_to_earn";
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
