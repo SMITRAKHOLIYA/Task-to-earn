@@ -3,6 +3,7 @@
 // dashboard_admin.php
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
+require_once 'includes/pagination.php';
 
 redirectIfNotAdmin();
 
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get tasks
+// Setup pagination
 $sql = "SELECT tasks.*, creator.username AS creator, 
         assigned.username AS assigned_to_name
         FROM tasks 
@@ -63,8 +64,14 @@ $sql = "SELECT tasks.*, creator.username AS creator,
         LEFT JOIN users assigned ON tasks.assigned_to = assigned.id
         WHERE tasks.created_by = ? OR assigned.parent_id = ?
         ORDER BY created_at DESC";
+
+$pagination = new Pagination($conn);
+$pagination_data = $pagination->setup($sql, [$admin_id, $admin_id], "ii");
+
+// Get tasks with pagination
+$sql .= " LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $admin_id, $admin_id);
+$stmt->bind_param("iiii", $admin_id, $admin_id, $pagination_data['records_per_page'], $pagination_data['offset']);
 $stmt->execute();
 $result = $stmt->get_result();
 $tasks = $result->fetch_all(MYSQLI_ASSOC);
@@ -132,6 +139,7 @@ if ($row = $result->fetch_assoc()) {
 
 <?php include 'includes/header.php'; ?>
 
+
 <div class="dashboard">
     <div class="sidebar">
         <div class="user-card">
@@ -185,6 +193,7 @@ if ($row = $result->fetch_assoc()) {
             </li>
         </ul>
     </div>
+    
     
     <div class="main-content">
         <?php if (isset($_SESSION['success_message'])): ?>
@@ -308,6 +317,9 @@ if ($row = $result->fetch_assoc()) {
                 </div>
             <?php endforeach; ?>
         </div>
+        
+        <!-- pagination is here -->
+        <?php echo $pagination->render(); ?>
         
         <div class="section-title">
             <h2><i class="fas fa-chart-pie"></i> Statistics</h2>
@@ -440,6 +452,7 @@ if ($row = $result->fetch_assoc()) {
         </form>
     </div>
 </div>
+
 
 <script>
     // Task filtering functionality

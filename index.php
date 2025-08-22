@@ -1,7 +1,5 @@
 <?php
 session_start();
-require_once 'includes/config.php';
-require_once 'includes/auth.php';
 ?>
 
 <!DOCTYPE html>
@@ -44,6 +42,118 @@ require_once 'includes/auth.php';
             line-height: 1.6;
             overflow-x: hidden;
             position: relative;
+        }
+
+        /* Enhanced Background */
+        .enhanced-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(18, 18, 18, 0.9) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(18, 18, 18, 0.9) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+        }
+
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(90deg, var(--color-gradient-1), var(--color-gradient-2));
+            height: 1px;
+            opacity: 0.1;
+            transform-origin: left center;
+            animation: linePulse 8s infinite ease-in-out;
+        }
+
+        .connection-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--color-secondary);
+            opacity: 0.3;
+            animation: dotPulse 4s infinite ease-in-out alternate;
+        }
+
+        @keyframes linePulse {
+            0%, 100% { opacity: 0.05; transform: scaleX(0.2); }
+            50% { opacity: 0.15; transform: scaleX(1); }
+        }
+
+        @keyframes dotPulse {
+            0% { opacity: 0.1; transform: scale(0.8); }
+            100% { opacity: 0.4; transform: scale(1.2); }
+        }
+
+        .geometric-shape {
+            position: absolute;
+            border: 1px solid;
+            opacity: 0.05;
+            animation: shapeRotate 30s infinite linear;
+        }
+
+        .shape-triangle {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 40px 70px 40px;
+            border-color: transparent transparent var(--color-primary) transparent;
+        }
+
+        .shape-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border-color: var(--color-secondary);
+        }
+
+        .shape-square {
+            width: 60px;
+            height: 60px;
+            border-color: var(--color-primary);
+        }
+
+        @keyframes shapeRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .micro-particle {
+            position: absolute;
+            background: var(--color-secondary);
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: microFloat 15s infinite linear;
+        }
+
+        @keyframes microFloat {
+            0% { 
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% { 
+                transform: translateY(-100px) translateX(50px);
+                opacity: 0;
+            }
         }
 
         /* Floating Background Elements */
@@ -368,7 +478,6 @@ require_once 'includes/auth.php';
             position: relative;
         }
         .steps-container::before {
-            content: '';
             position: absolute;
             width: 2px;
             height: 100%;
@@ -551,6 +660,37 @@ require_once 'includes/auth.php';
     </style>
 </head>
 <body>
+    <!-- Enhanced Background -->
+    <div class="enhanced-bg">
+        <div class="grid-pattern"></div>
+        
+        <!-- Connection lines -->
+        <div class="connection-line" style="top: 30%; left: 10%; width: 200px; animation-delay: 0s;"></div>
+        <div class="connection-line" style="top: 60%; left: 60%; width: 150px; animation-delay: 2s;"></div>
+        <div class="connection-line" style="top: 20%; left: 70%; width: 180px; animation-delay: 4s;"></div>
+        <div class="connection-line" style="top: 80%; left: 20%; width: 220px; animation-delay: 6s;"></div>
+        
+        <!-- Connection dots -->
+        <div class="connection-dot" style="top: 30%; left: 10%; animation-delay: 0s;"></div>
+        <div class="connection-dot" style="top: 30%; left: 210px; animation-delay: 1s;"></div>
+        <div class="connection-dot" style="top: 60%; left: 60%; animation-delay: 2s;"></div>
+        <div class="connection-dot" style="top: 60%; left: calc(60% + 150px); animation-delay: 3s;"></div>
+        
+        <!-- Geometric shapes -->
+        <div class="geometric-shape shape-triangle" style="top: 15%; left: 15%; animation-delay: 0s;"></div>
+        <div class="geometric-shape shape-circle" style="top: 75%; left: 80%; animation-delay: 5s;"></div>
+        <div class="geometric-shape shape-square" style="top: 10%; left: 85%; animation-delay: 10s;"></div>
+        <div class="geometric-shape shape-triangle" style="top: 85%; left: 10%; animation-delay: 15s; transform: rotate(180deg);"></div>
+        
+        <!-- Micro particles -->
+        <div class="micro-particle" style="top: 20%; left: 20%; animation-delay: 0s;"></div>
+        <div class="micro-particle" style="top: 40%; left: 40%; animation-delay: 2s;"></div>
+        <div class="micro-particle" style="top: 60%; left: 60%; animation-delay: 4s;"></div>
+        <div class="micro-particle" style="top: 80%; left: 80%; animation-delay: 6s;"></div>
+        <div class="micro-particle" style="top: 30%; left: 70%; animation-delay: 1s;"></div>
+        <div class="micro-particle" style="top: 70%; left: 30%; animation-delay: 3s;"></div>
+    </div>
+
     <div class="floating floating-1"></div>
     <div class="floating floating-2"></div>
     <div class="floating floating-3"></div>
@@ -772,10 +912,10 @@ require_once 'includes/auth.php';
     <footer class="footer">
         <div class="container">
             <div class="social-links">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.twitter.com"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com"><i class="fab fa-linkedin-in"></i></a>
             </div>
             <p>&copy; 2023 Task to Earn. All rights reserved.</p>
         </div>
@@ -797,6 +937,20 @@ require_once 'includes/auth.php';
                     }
                 });
             });
+
+            // Generate additional particles dynamically
+            const enhancedBg = document.querySelector('.enhanced-bg');
+            
+            // Add more micro particles
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'micro-particle';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 20) + 's';
+                enhancedBg.appendChild(particle);
+            }
         });
     </script>
 </body>

@@ -196,7 +196,7 @@ if ($result->num_rows > 0) {
     $parent_info = $parent['username'];
 }
 
-// Function to check achievements
+// Replace the existing checkAchievements function with this one
 function checkAchievements($user_id, $conn) {
     // Check for task completion achievements
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM task_completions WHERE user_id = ?");
@@ -205,8 +205,9 @@ function checkAchievements($user_id, $conn) {
     $result = $stmt->get_result();
     $taskCount = $result->fetch_assoc()['count'];
     
+    // Check if user has the Task Master achievement (for 5 tasks)
     if ($taskCount >= 5) {
-        $achievementCheck = $conn->prepare("SELECT id FROM achievements WHERE user_id = ? AND type = 'task_completion' AND level = 5");
+        $achievementCheck = $conn->prepare("SELECT id FROM achievements WHERE user_id = ? AND title = 'Task Master'");
         $achievementCheck->bind_param("i", $user_id);
         $achievementCheck->execute();
         
@@ -228,7 +229,7 @@ function checkAchievements($user_id, $conn) {
             $title = ucfirst($difficulty) . " Task Champion";
             $description = "Completed 3 " . $difficulty . " tasks!";
             
-            $achievementCheck = $conn->prepare("SELECT id FROM achievements WHERE user_id = ? AND type = 'difficulty' AND title = ?");
+            $achievementCheck = $conn->prepare("SELECT id FROM achievements WHERE user_id = ? AND title = ?");
             $achievementCheck->bind_param("is", $user_id, $title);
             $achievementCheck->execute();
             
@@ -555,78 +556,89 @@ include 'includes/header.php';
 
 <script>
     // Navigation functionality
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Only prevent default for dashboard section links
-            if (this.getAttribute('href').includes('dashboard_child.php#')) {
-                e.preventDefault();
-                
-                // Hide all sections
-                document.querySelectorAll('.main-content > div[id]').forEach(section => {
-                    section.style.display = 'none';
-                });
-                
-                // Show selected section
-                const target = this.getAttribute('href').split('#')[1];
-                document.getElementById(target).style.display = 'block';
-                
-                // Update active link
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.classList.remove('active');
-                });
-                this.classList.add('active');
-                
-                // Update URL without reload
-                history.pushState(null, null, this.getAttribute('href'));
-            }
-            // External links (like wish_list.php) will follow normally
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide all sections first
+        document.querySelectorAll('.main-content > div[id]').forEach(section => {
+            section.style.display = 'none';
         });
-    });
-    
-    // Show available tasks by default if no hash in URL
-    if (!window.location.hash) {
-        document.getElementById('available-tasks').style.display = 'block';
-    } else {
-        const target = window.location.hash.substring(1);
-        document.getElementById(target).style.display = 'block';
+        
+        // Determine which section to show based on URL hash
+        let targetSection = 'available-tasks';
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (document.getElementById(hash)) {
+                targetSection = hash;
+            }
+        }
+        
+        // Show the target section
+        document.getElementById(targetSection).style.display = 'block';
         
         // Update active link
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
-            if (link.getAttribute('href') === `dashboard_child.php${window.location.hash}`) {
+            if (link.getAttribute('href') === `dashboard_child.php#${targetSection}`) {
                 link.classList.add('active');
             }
         });
-    }
-    
-    // Handle browser back/forward navigation
-    window.addEventListener('popstate', function() {
-        const hash = window.location.hash.substring(1);
-        if (hash) {
-            document.querySelectorAll('.main-content > div[id]').forEach(section => {
-                section.style.display = 'none';
-            });
-            document.getElementById(hash).style.display = 'block';
-            
-            // Update active link
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `dashboard_child.php${window.location.hash}`) {
-                    link.classList.add('active');
+        
+        // Add click event listeners to navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Only prevent default for dashboard section links
+                if (this.getAttribute('href').includes('dashboard_child.php#')) {
+                    e.preventDefault();
+                    
+                    // Hide all sections
+                    document.querySelectorAll('.main-content > div[id]').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show selected section
+                    const target = this.getAttribute('href').split('#')[1];
+                    document.getElementById(target).style.display = 'block';
+                    
+                    // Update active link
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update URL without reload
+                    history.pushState(null, null, this.getAttribute('href'));
                 }
+                // External links (like wish_list.php) will follow normally
             });
-        }
-    });
-    
-    // Auto-hide notifications after 3 seconds
-    document.querySelectorAll('.notification').forEach(notification => {
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 500);
-        }, 3000);
+        });
+        
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                document.querySelectorAll('.main-content > div[id]').forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById(hash).style.display = 'block';
+                
+                // Update active link
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `dashboard_child.php${window.location.hash}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+        
+        // Auto-hide notifications after 3 seconds
+        document.querySelectorAll('.notification').forEach(notification => {
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        });
     });
 </script>
-
 <style>
     /* Notification styles */
     .notification-container {

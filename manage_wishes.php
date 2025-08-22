@@ -3,6 +3,8 @@
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
 require_once 'includes/header.php';
+require_once 'includes/pagination.php';
+
 redirectIfNotAdmin();
 
 $user_id = $_SESSION['user_id'];
@@ -66,15 +68,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Get all children for this admin
 $children = $conn->query("SELECT * FROM users WHERE role = 'child' AND parent_id = " . $_SESSION['user_id'])->fetch_all(MYSQLI_ASSOC);
 
-// Get all wishes with child names and task info
-$wishes = $conn->query("
+// Setup pagination
+global $pagination;
+$pagination = new Pagination($conn, 4); // Adjust records per page as needed, e.g., 10
+$sql = "
     SELECT w.*, u.username AS child_name, t.title AS task_title, t.status AS task_status
     FROM wishes w
     JOIN users u ON w.child_id = u.id
     LEFT JOIN tasks t ON w.task_id = t.id
-    WHERE u.parent_id = " . $_SESSION['user_id'] . "
+    WHERE u.parent_id = ?
     ORDER BY w.created_at DESC
-")->fetch_all(MYSQLI_ASSOC);
+";
+$params = [$_SESSION['user_id']];
+$param_types = "i";
+$setup = $pagination->setup($sql, $params, $param_types);
+
+// Get paginated wishes
+$paged_sql = $sql . " LIMIT ?, ?";
+$stmt = $conn->prepare($paged_sql);
+$params[] = $setup['offset'];
+$params[] = $setup['records_per_page'];
+$param_types .= "ii";
+$stmt->bind_param($param_types, ...$params);
+$stmt->execute();
+$result = $stmt->get_result();
+$wishes = $result->fetch_all(MYSQLI_ASSOC);
 
 // Fetch user profile data
 $profile_pic = null;
@@ -224,6 +242,7 @@ if ($result->num_rows > 0) {
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    <?php echo $pagination->render(); ?>
                 </div>
             </div>
         <?php else: ?>

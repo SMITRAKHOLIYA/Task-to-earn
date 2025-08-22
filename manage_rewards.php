@@ -1,9 +1,9 @@
 <?php
-
 // manage_rewards.php
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
 require_once 'includes/header.php';
+require_once 'includes/pagination.php';
 redirectIfNotAdmin();
 
 $user_id = $_SESSION['user_id'];
@@ -79,9 +79,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get rewards created by current admin
-$stmt = $conn->prepare("SELECT * FROM rewards WHERE created_by = ?");
-$stmt->bind_param("i", $_SESSION['user_id']);
+// Setup pagination
+global $pagination;
+$pagination = new Pagination($conn, 4); // Adjust records per page as needed, e.g., 10
+$sql = "SELECT * FROM rewards WHERE created_by = ? ORDER BY id DESC";
+$params = [$_SESSION['user_id']];
+$param_types = "i";
+$setup = $pagination->setup($sql, $params, $param_types);
+
+// Get paginated rewards
+$paged_sql = $sql . " LIMIT ?, ?";
+$stmt = $conn->prepare($paged_sql);
+$params[] = $setup['offset'];
+$params[] = $setup['records_per_page'];
+$param_types .= "ii";
+$stmt->bind_param($param_types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 $rewards = $result->fetch_all(MYSQLI_ASSOC);
@@ -212,6 +224,7 @@ if ($result->num_rows > 0) {
                         </div>
                     </div>
                 <?php endforeach; ?>
+                <?php echo $pagination->render(); ?>
             <?php else: ?>
                 <div class="card">
                     <div class="card-body" style="text-align: center; padding: 40px;">
