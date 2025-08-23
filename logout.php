@@ -6,6 +6,6 @@ require_once 'includes/session_tracker.php';
 
 trackLogout();
 session_destroy();
-header("Location: login.php");
+header("Location: index.php");
 exit;
 ?>

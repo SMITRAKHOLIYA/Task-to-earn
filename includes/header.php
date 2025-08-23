@@ -33,7 +33,7 @@ if (isChild()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task to Earn | Futuristic Task Management</title>
+    <title>Earnify | Futuristic Task Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -51,7 +51,7 @@ if (isChild()) {
                     <div class="logo-icon">
                         <i class="fas fa-tasks"></i>
                     </div>
-                    <div class="logo-text">Task to Earn</div>
+                    <div class="logo-text">Earnify</div>
                 </div>
             </div>
             

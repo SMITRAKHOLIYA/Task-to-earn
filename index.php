@@ -7,10 +7,12 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task to Earn | Futuristic Task Management</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Earnify - Gamified Task Management for Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* General Styles & Variables */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
         :root {
             --color-primary: #8a2be2;
             --color-secondary: #00bcd4;
@@ -20,30 +22,40 @@ session_start();
             --color-text-light: #f0f0f0;
             --color-card-bg: #1e1e1e;
             --color-border: #333;
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-main: 'Inter', sans-serif;
             --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.2);
             --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
-
+        
         * {
+            font-family: 'Inter', sans-serif;
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
-        html {
+        
+        html, body {
             scroll-behavior: smooth;
+            height: 100%;
+            overflow-x: hidden;
         }
-
+        
         body {
             font-family: var(--font-main);
             color: var(--color-text-light);
             background-color: var(--color-bg-dark);
             line-height: 1.6;
-            overflow-x: hidden;
             position: relative;
+            overflow-y: auto;
         }
-
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
         /* Enhanced Background */
         .enhanced-bg {
             position: fixed;
@@ -156,9 +168,142 @@ session_start();
             }
         }
 
+        .animated-bg {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .grid-pattern-original {
+            background-image: 
+                linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .floating-circle {
+            position: fixed;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        .floating-circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .floating-circle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        .floating-circle:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: particle-float 8s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes particle-float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+        }
+        
+        .geometric-shape-original {
+            position: fixed;
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(10px);
+            background: rgba(15, 15, 35, 0.8);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+        
+        .timeline-line {
+            position: relative;
+        }
+        
+        .timeline-line::before {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            transform: translateX(-50%);
+        }
+        
+        .step-circle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: relative;
+            z-index: 10;
+        }
+        
         /* Floating Background Elements */
         .floating {
-            position: absolute;
+            position: fixed;
             width: 30vw;
             height: 30vw;
             border-radius: 50%;
@@ -177,21 +322,8 @@ session_start();
         @keyframes float-1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20vw, 15vh); } }
         @keyframes float-2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-25vw, -10vh); } }
         @keyframes float-3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(15vw, -20vh); } }
-
-        /* Utilities */
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 0 2rem;
-        }
-
-        .gradient-text {
-            background: linear-gradient(45deg, var(--color-gradient-1), var(--color-gradient-2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
+        
+        /* Button Styles */
         .btn {
             padding: 0.8rem 2rem;
             border-radius: 50px;
@@ -201,6 +333,7 @@ session_start();
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            cursor: pointer;
         }
         .btn:hover {
             transform: translateY(-3px);
@@ -236,395 +369,24 @@ session_start();
         .btn-outline:hover::before {
             left: 0;
         }
-
-        /* Navigation Bar */
-        .main-nav {
-            padding: 1.5rem 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            background-color: rgba(18, 18, 18, 0.8);
-            backdrop-filter: blur(10px);
-            transition: background-color 0.3s ease;
-        }
-        .main-nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .main-nav .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .main-nav .logo-icon {
-            font-size: 1.5rem;
-            color: var(--color-primary);
-        }
-        .main-nav .logo-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .main-nav .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        .main-nav .nav-links a {
-            color: var(--color-text-light);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .main-nav .nav-links a:hover {
-            color: var(--color-secondary);
-        }
-        .main-nav .nav-toggle {
-            display: none;
-            font-size: 2rem;
-            background: none;
-            border: none;
-            color: var(--color-text-light);
-            cursor: pointer;
-        }
-
-        /* Hero Section */
-        .hero {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            padding-top: 6rem;
+        
+        /* Content area - ensures scrolling works */
+        .content-area {
             position: relative;
-            overflow: hidden;
-        }
-        .hero-content {
             z-index: 1;
-            padding: 0 1rem;
-        }
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-        .hero-subtitle {
-            font-size: 1.25rem;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            opacity: 0.8;
-        }
-        .hero-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-        }
-        .hero-image {
-            display: none; /* Hide on smaller screens */
+            min-height: 100vh;
         }
         
-        .hero-illustration {
-            position: absolute;
-            top: 50%;
-            right: 15%;
-            transform: translateY(-50%);
-            width: 350px;
-            height: 350px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-card);
-        }
-        .hero-card {
-            background-color: var(--color-card-bg);
-            padding: 1.5rem 2rem;
-            border-radius: 20px;
-            text-align: center;
+        section {
             position: relative;
             z-index: 2;
-            box-shadow: var(--shadow-card);
-            animation: pulse 3s infinite ease-in-out;
         }
-        .card-points {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--color-secondary);
-            margin-bottom: 0.5rem;
-        }
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-        .card-checkmark {
-            position: absolute;
-            bottom: -20px;
-            right: -20px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, var(--color-gradient-1), var(--color-gradient-2));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            border: 5px solid var(--color-bg-dark);
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        /* Particles within hero illustration */
-        .particle {
-            position: absolute;
-            background: var(--color-secondary);
-            border-radius: 50%;
-            opacity: 0;
-            animation: particle-float 15s infinite ease-in-out;
-        }
-        .particle-1 { width: 15px; height: 15px; top: 10%; left: 20%; animation-delay: 0s; }
-        .particle-2 { width: 10px; height: 10px; top: 80%; left: 70%; animation-delay: 5s; }
-        .particle-3 { width: 20px; height: 20px; top: 40%; left: 40%; animation-delay: 10s; }
-
-        @keyframes particle-float {
-            0%, 100% { transform: translate(0, 0) scale(0.5); opacity: 0; }
-            50% { transform: translate(10px, -10px) scale(1); opacity: 0.7; }
-        }
-
-        /* Sections */
-        section {
-            padding: 6rem 0;
-        }
-        .section-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        .section-header h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        .section-header p {
-            font-size: 1.1rem;
-            max-width: 700px;
-            margin: auto;
-            opacity: 0.8;
-        }
-
-        /* Features Section */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        .feature-card {
-            background-color: var(--color-card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid var(--color-border);
-            position: relative;
-            overflow: hidden;
-        }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, var(--color-gradient-1), var(--color-gradient-2));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-card);
-        }
-        .feature-card:hover::before {
-            opacity: 0.2;
-        }
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(45deg, var(--color-gradient-1), var(--color-gradient-2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .feature-card p {
-            opacity: 0.7;
-        }
-
-        /* How It Works Section */
-        .steps-container {
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
-            align-items: center;
-            position: relative;
-        }
-        .steps-container::before {
-            position: absolute;
-            width: 2px;
-            height: 100%;
-            background-color: var(--color-border);
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .step {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            max-width: 800px;
-        }
-        .step:nth-child(even) {
-            flex-direction: row-reverse;
-        }
-        .step-number {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--color-gradient-1), var(--color-gradient-2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            flex-shrink: 0;
-            border: 5px solid var(--color-bg-dark);
-            z-index: 1;
-        }
-        .step-content {
-            background-color: var(--color-card-bg);
-            padding: 1.5rem;
-            border-radius: 15px;
-            border: 1px solid var(--color-border);
-            flex-grow: 1;
-        }
-        .step-content h3 {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Testimonials Section */
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        .testimonial-card {
-            background-color: var(--color-card-bg);
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow-card);
-            border: 1px solid var(--color-border);
-            position: relative;
-            z-index: 1;
-        }
-        .testimonial-quote {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            font-size: 3rem;
-            color: var(--color-gradient-1);
-            opacity: 0.2;
-        }
-        .testimonial-card p {
-            margin-bottom: 1.5rem;
-            font-style: italic;
-            opacity: 0.9;
-        }
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .author-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--color-gradient-1), var(--color-gradient-2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-        .author-info h4 {
-            font-size: 1.2rem;
-        }
-        .author-info p {
-            font-size: 0.9rem;
-            opacity: 0.6;
-            margin-bottom: 0;
-            font-style: normal;
-        }
-
-        /* Call to Action Section */
-        .cta {
-            background: linear-gradient(45deg, var(--color-bg-dark), rgba(18, 18, 18, 0.9)), 
-                        url('https://example.com/cta-bg.jpg') no-repeat center center/cover; /* Placeholder URL */
-            padding: 8rem 2rem;
-            text-align: center;
-        }
-        .cta-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        .cta-content p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: auto;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: var(--color-card-bg);
-            padding: 2rem 0;
-            text-align: center;
-            border-top: 1px solid var(--color-border);
-        }
-        .social-links {
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-        }
-        .social-links a {
-            color: var(--color-text-light);
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-        .social-links a:hover {
-            color: var(--color-secondary);
-        }
-        .footer p {
-            font-size: 0.9rem;
-            opacity: 0.6;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 1024px) {
-            .hero-title { font-size: 3rem; }
-            .hero-illustration { display: none; }
-        }
-
+        
         @media (max-width: 768px) {
+            .timeline-line::before {
+                left: 20px;
+            }
+            
             .main-nav .nav-links {
                 position: fixed;
                 top: 0;
@@ -637,30 +399,17 @@ session_start();
                 justify-content: center;
                 gap: 2.5rem;
                 transition: right 0.5s ease-in-out;
+                z-index: 1000;
             }
             .main-nav .nav-links.active {
                 right: 0;
             }
             .main-nav .nav-toggle { display: block; }
-            .main-nav .container { padding: 0 1rem; }
-            .hero { text-align: center; }
-            .hero-buttons { flex-direction: column; }
-            .hero-title { font-size: 2.5rem; }
-            .hero-subtitle { font-size: 1rem; }
-            .feature-card { padding: 2rem; }
-            .section-header h2 { font-size: 2rem; }
-            .step { flex-direction: column; text-align: center; }
-            .step:nth-child(even) { flex-direction: column; }
-            .steps-container::before { left: 50%; transform: translateX(-50%); height: calc(100% - 100px); top: 50px; }
-            .testimonial-card { text-align: center; }
-            .testimonial-author { justify-content: center; }
-            .testimonial-quote { top: 1rem; left: 50%; transform: translateX(-50%); }
-            .cta-content h2 { font-size: 2rem; }
         }
     </style>
 </head>
-<body>
-    <!-- Enhanced Background -->
+<body class="animated-bg text-white">
+    <!-- Enhanced Background Elements -->
     <div class="enhanced-bg">
         <div class="grid-pattern"></div>
         
@@ -695,250 +444,430 @@ session_start();
     <div class="floating floating-2"></div>
     <div class="floating floating-3"></div>
     
-    <nav class="main-nav">
-        <div class="container">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-tasks"></i>
+    <!-- Original Background Elements -->
+    <div class="grid-pattern-original"></div>
+    <div class="floating-circle"></div>
+    <div class="floating-circle"></div>
+    <div class="floating-circle"></div>
+    
+    <!-- Particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 6s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 7s;"></div>
+    
+    <!-- Geometric Shapes -->
+    <div class="geometric-shape-original" style="top: 15%; right: 15%; width: 30px; height: 30px; border: 2px solid #667eea; transform-origin: center;"></div>
+    <div class="geometric-shape-original" style="bottom: 25%; left: 15%; width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 25px solid #764ba2; animation-duration: 8s;"></div>
+    <div class="geometric-shape-original" style="top: 40%; right: 25%; width: 25px; height: 25px; background: #667eea; animation-duration: 12s;"></div>
+
+    <!-- Main Content Area (Scrollable) -->
+    <div class="content-area">
+        <!-- Navigation -->
+        <nav class="main-nav fixed top-0 left-0 right-0 z-50 nav-blur border-b border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="text-2xl font-bold gradient-text">Earnify</div>
+                    </div>
+                    
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-8">
+                            <a href="#home" class="hover:text-purple-400 transition-colors">Home</a>
+                            <a href="#features" class="hover:text-purple-400 transition-colors">Features</a>
+                            <a href="#how-it-works" class="hover:text-purple-400 transition-colors">How It Works</a>
+                            <a href="#testimonials" class="hover:text-purple-400 transition-colors">Review</a>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden md:flex items-center space-x-4">
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <?php
+                            $dashboardLink = ($_SESSION['role'] == 'admin') ? 'dashboard_admin.php' : 'dashboard_child.php';
+                            ?>
+                            <a href="<?= $dashboardLink ?>" class="btn btn-outline">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a href="logout.php" class="btn btn-primary">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        <?php else: ?>
+                            <a href="login.php" class="px-4 py-2 text-sm font-medium text-white hover:text-purple-400 transition-colors">Login</a>
+                            <a href="register.php" class="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all">Sign Up</a>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="md:hidden">
+                        <button id="mobile-menu-btn" class="text-white hover:text-purple-400">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="logo-text">Task to Earn</div>
             </div>
             
-            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="nav-links" id="nav-links">
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="#testimonials">Testimonials</a>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <?php
-                    $dashboardLink = ($_SESSION['role'] == 'admin') ? 'dashboard_admin.php' : 'dashboard_child.php';
-                    ?>
-                    <a href="<?= $dashboardLink ?>" class="btn btn-outline">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-gray-900 bg-opacity-95">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="#home" class="block px-3 py-2 text-white hover:text-purple-400">Home</a>
+                    <a href="#features" class="block px-3 py-2 text-white hover:text-purple-400">Features</a>
+                    <a href="#how-it-works" class="block px-3 py-2 text-white hover:text-purple-400">How It Works</a>
+                    <a href="#testimonials" class="block px-3 py-2 text-white hover:text-purple-400">Reviews</a>
+                    <div class="px-3 py-2 space-y-2">
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <?php
+                            $dashboardLink = ($_SESSION['role'] == 'admin') ? 'dashboard_admin.php' : 'dashboard_child.php';
+                            ?>
+                            <a href="<?= $dashboardLink ?>" class="block w-full text-left text-white hover:text-purple-400">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a href="logout.php" class="block w-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        <?php else: ?>
+                            <a href="login.php" class="block w-full text-left text-white hover:text-purple-400">Login</a>
+                            <a href="register.php" class="block w-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg">Sign Up</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="home" class="relative min-h-screen flex items-center justify-center pt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="mb-8">
+                    <h1 class="text-5xl md:text-7xl font-bold mb-6">
+                        Make Tasks <span class="gradient-text">Fun</span> for Kids
+                    </h1>
+                    <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                        Transform daily chores into exciting quests with our gamified task management platform designed specifically for children.
+                    </p>
+                </div>
+                
+                <!-- Task Completion Card -->
+                <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto mb-8 border border-gray-700">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Today's Progress</h3>
+                        <div class="pulse-dot w-3 h-3 bg-green-400 rounded-full"></div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>Tasks Completed</span>
+                                <span>7/10</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold gradient-text">350</div>
+                            <div class="text-xs text-gray-400">Points</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php
+                        $dashboardLink = ($_SESSION['role'] == 'admin') ? 'dashboard_admin.php' : 'dashboard_child.php';
+                        ?>
+                        <a href="<?= $dashboardLink ?>" class="px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105">
+                            Go to Dashboard
+                        </a>
+                    <?php else: ?>
+                        <a href="register.php" class="px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105">
+                            Start Your Quest
+                        </a>
+                    <?php endif; ?>
+                    <a href="#features" class="px-8 py-4 text-lg font-semibold text-white border-2 border-purple-600 rounded-xl hover:bg-purple-600 transition-all">
+                        Watch Demo
                     </a>
-                    <a href="logout.php" class="btn btn-primary">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
-                <?php else: ?>
-                    <a href="login.php" class="btn btn-outline">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </nav>
-    
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Transform Tasks <span class="gradient-text">Into Rewards</span></h1>
-            <p class="hero-subtitle">A futuristic platform that motivates children to complete tasks and earn exciting rewards</p>
-            <div class="hero-buttons">
-                <?php if (!isset($_SESSION['user_id'])): ?>
-                    <a href="login.php" class="btn btn-primary">
-                        <i class="fas fa-rocket"></i> Get Started
-                    </a>
-                <?php else: ?>
-                    <a href="<?= $dashboardLink ?>" class="btn btn-primary">
-                        <i class="fas fa-rocket"></i> Go to Dashboard
-                    </a>
-                <?php endif; ?>
-                <a href="#features" class="btn btn-outline">
-                    <i class="fas fa-binoculars"></i> Explore Features
-                </a>
-            </div>
-        </div>
-        <div class="hero-image">
-            <div class="hero-illustration">
-                <div class="particle particle-1"></div>
-                <div class="particle particle-2"></div>
-                <div class="particle particle-3"></div>
-                <div class="hero-card">
-                    <div class="card-points">+50 pts</div>
-                    <div class="card-title">Clean Your Room</div>
-                    <div class="card-checkmark">
-                        <i class="fas fa-check"></i>
-                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Why Choose <span class="gradient-text">Task to Earn</span></h2>
-                <p>Our platform combines gamification with task management for a fun, rewarding experience</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <h3>Gamified Experience</h3>
-                    <p>Earn points, unlock achievements, and level up as you complete tasks</p>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                        Why Kids <span class="gradient-text">Love</span> Earnify
+                    </h2>
+                    <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                        Our platform combines the excitement of gaming with the satisfaction of completing real-world tasks.
+                    </p>
                 </div>
                 
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-gift"></i>
-                    </div>
-                    <h3>Exciting Rewards</h3>
-                    <p>Redeem your hard-earned points for real-world rewards and privileges</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Progress Tracking</h3>
-                    <p>Visual dashboards show your accomplishments and growth over time</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <h3>Parental Control</h3>
-                    <p>Parents can create tasks, set rewards, and monitor progress</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-header">
-                <h2>How It <span class="gradient-text">Works</span></h2>
-                <p>Simple steps to transform chores into exciting challenges</p>
-            </div>
-            
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3>Parents Create Tasks</h3>
-                        <p>Define tasks with clear descriptions and point values</p>
-                    </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3>Children Complete Tasks</h3>
-                        <p>Kids view their task list and mark items as completed</p>
-                    </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3>Earn Points</h3>
-                        <p>Points are automatically added to the child's account</p>
-                    </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3>Redeem Rewards</h3>
-                        <p>Exchange points for pre-approved rewards and privileges</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-            <div class="section-header">
-                <h2>What <span class="gradient-text">Families Say</span></h2>
-                <p>Hear from parents and children who transformed their routines</p>
-            </div>
-            
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="testimonial-quote">
-                            <i class="fas fa-quote-left"></i>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card-hover bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-gamepad text-2xl text-white"></i>
                         </div>
-                        <p>Task to Earn has completely changed how my kids approach chores. They actually ask for tasks now!</p>
+                        <h3 class="text-xl font-semibold mb-3">Gamified Experience</h3>
+                        <p class="text-gray-300">Turn everyday tasks into exciting adventures with points, levels, and achievements.</p>
                     </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">
-                            <i class="fas fa-user"></i>
+                    
+                    <div class="card-hover bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-gift text-2xl text-white"></i>
                         </div>
-                        <div class="author-info">
-                            <h4>Sarah Johnson</h4>
-                            <p>Parent</p>
+                        <h3 class="text-xl font-semibold mb-3">Exciting Rewards</h3>
+                        <p class="text-gray-300">Earn virtual rewards and unlock special privileges for completing tasks consistently.</p>
+                    </div>
+                    
+                    <div class="card-hover bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-chart-line text-2xl text-white"></i>
                         </div>
+                        <h3 class="text-xl font-semibold mb-3">Progress Tracking</h3>
+                        <p class="text-gray-300">Visual progress bars and statistics help kids see their improvement over time.</p>
+                    </div>
+                    
+                    <div class="card-hover bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-shield-alt text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Parental Control</h3>
+                        <p class="text-gray-300">Parents can monitor progress, set tasks, and manage rewards from their dashboard.</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                        How It <span class="gradient-text">Works</span>
+                    </h2>
+                    <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                        Getting started is simple! Follow these easy steps to begin your family's task management journey.
+                    </p>
+                </div>
                 
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="testimonial-quote">
-                            <i class="fas fa-quote-left"></i>
+                <div class="timeline-line relative">
+                    <div class="grid md:grid-cols-3 gap-8 md:gap-12">
+                        <div class="text-center md:text-left">
+                            <div class="step-circle w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mx-auto md:mx-0 mb-4">1</div>
+                            <h3 class="text-xl font-semibold mb-3">Create Account</h3>
+                            <p class="text-gray-300">Sign up for free and set up profiles for parents and children with age-appropriate settings.</p>
                         </div>
-                        <p>I earned enough points for a new video game by doing my homework and chores. Best system ever!</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">
-                            <i class="fas fa-user"></i>
+                        
+                        <div class="text-center">
+                            <div class="step-circle w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mx-auto mb-4">2</div>
+                            <h3 class="text-xl font-semibold mb-3">Add Tasks</h3>
+                            <p class="text-gray-300">Parents create fun, engaging tasks with point values and deadlines that motivate kids.</p>
                         </div>
-                        <div class="author-info">
-                            <h4>Michael T.</h4>
-                            <p>Age 12</p>
+                        
+                        <div class="text-center md:text-right">
+                            <div class="step-circle w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mx-auto md:mx-0 mb-4">3</div>
+                            <h3 class="text-xl font-semibold mb-3">Earn Rewards</h3>
+                            <p class="text-gray-300">Kids complete tasks, earn points, unlock achievements, and redeem exciting rewards.</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <section class="cta">
-        <div class="container cta-content">
-            <h2>Ready to Transform Your Family's Routine?</h2>
-            <p>Join thousands of families who've made chores fun and rewarding</p>
-            <a href="login.php" class="btn btn-primary btn-large">
-                <i class="fas fa-rocket"></i> Start Now
-            </a>
-        </div>
-    </section>
-    
-    <footer class="footer">
-        <div class="container">
-            <div class="social-links">
-                <a href="https://www.facebook.com"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.twitter.com"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.linkedin.com"><i class="fab fa-linkedin-in"></i></a>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                        What Families <span class="gradient-text">Say</span>
+                    </h2>
+                    <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                        Discover how Earnify has transformed daily routines for families around the world.
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-quote-left text-2xl text-purple-400 mr-3"></i>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-6">"My kids actually ask to do their chores now! The point system and rewards have completely changed our household dynamics."</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-white font-semibold">SM</span>
+                            </div>
+                            <div>
+                                <div class="font-semibold">Sarah Mitchell</div>
+                                <div class="text-sm text-gray-400">Mother of 3</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-quote-left text-2xl text-purple-400 mr-3"></i>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-6">"The progress tracking helps me see how my children are developing responsibility. It's like a game they never want to stop playing!"</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-white font-semibold">DJ</span>
+                            </div>
+                            <div>
+                                <div class="font-semibold">David Johnson</div>
+                                <div class="text-sm text-gray-400">Father of 2</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-quote-left text-2xl text-purple-400 mr-3"></i>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-6">"Earnify has made our family more organized and our kids more motivated. The parental controls give me peace of mind."</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-white font-semibold">ER</span>
+                            </div>
+                            <div>
+                                <div class="font-semibold">Emily Rodriguez</div>
+                                <div class="text-sm text-gray-400">Single Mom</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p>&copy; 2023 Task to Earn. All rights reserved.</p>
-        </div>
-    </footer>
-    
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="py-20 relative">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl p-12">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">
+                        Ready to Transform Your Family's Routine?
+                    </h2>
+                    <p class="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+                        Join thousands of families who have already discovered the magic of gamified task management. Start your free trial today!
+                    </p>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php
+                        $dashboardLink = ($_SESSION['role'] == 'admin') ? 'dashboard_admin.php' : 'dashboard_child.php';
+                        ?>
+                        <a href="<?= $dashboardLink ?>" class="px-10 py-4 text-lg font-semibold text-purple-600 bg-white rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105">
+                            Go to Dashboard
+                        </a>
+                    <?php else: ?>
+                        <a href="register.php" class="px-10 py-4 text-lg font-semibold text-purple-600 bg-white rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105">
+                            Start Free Trial
+                        </a>
+                    <?php endif; ?>
+                    <p class="text-sm text-purple-200 mt-4">No credit card required • 14-day free trial</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-12 border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <div class="text-2xl font-bold gradient-text mb-2">Earnify</div>
+                        <p class="text-gray-400">Making tasks fun for kids everywhere</p>
+                    </div>
+                    
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+                            <i class="fab fa-facebook-f text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+                    <p>&copy; 2024 Earnify. All rights reserved. Made with ❤️ for families.</p>
+                </div>
+            </div>
+        </footer>
+    </div> <!-- End of content-area -->
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navToggle = document.getElementById('nav-toggle');
-            const navLinks = document.getElementById('nav-links');
-
-            navToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    mobileMenu.classList.add('hidden');
+                }
             });
+        });
+        
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.classList.add('bg-opacity-95');
+            } else {
+                nav.classList.remove('bg-opacity-95');
+            }
+        });
+        
+        // Initialize particles with random positions and delays
+        function initializeParticles() {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                particle.style.animationDelay = `${Math.random() * 8}s`;
+                particle.style.left = `${Math.random() * 100}%`;
+            });
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeParticles();
             
-            navLinks.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (navLinks.classList.contains('active')) {
-                        navLinks.classList.remove('active');
-                    }
-                });
-            });
-
-            // Generate additional particles dynamically
+            // Generate additional micro particles dynamically
             const enhancedBg = document.querySelector('.enhanced-bg');
             
             // Add more micro particles
@@ -951,6 +880,29 @@ session_start();
                 particle.style.animationDuration = (10 + Math.random() * 20) + 's';
                 enhancedBg.appendChild(particle);
             }
+        });
+        
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all cards and sections
+        document.querySelectorAll('.card-hover, section').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
         });
     </script>
 </body>

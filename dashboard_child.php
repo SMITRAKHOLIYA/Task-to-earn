@@ -1,5 +1,4 @@
 <?php
-
 // dashboard_child.php
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
@@ -15,14 +14,26 @@ if (!isset($_SESSION['notifications'])) {
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['redeem_reward'])) {
-        $reward = $_POST['reward'];
-        $cost = intval($_POST['cost']);
+        $reward_id = intval($_POST['reward_id']);
         $user_id = $_SESSION['user_id'];
         
         // Begin transaction for atomic operations
         $conn->begin_transaction();
         
         try {
+            // Get reward details and verify it exists
+            $stmt = $conn->prepare("SELECT * FROM rewards WHERE id = ?");
+            $stmt->bind_param("i", $reward_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows === 0) {
+                throw new Exception("Reward not found");
+            }
+            
+            $reward = $result->fetch_assoc();
+            $cost = $reward['points'];
+            
             // Verify points and update
             $stmt = $conn->prepare("SELECT points FROM users WHERE id = ? FOR UPDATE");
             $stmt->bind_param("i", $user_id);
@@ -39,9 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Update session points
                 $_SESSION['points'] = $user['points'] - $cost;
                 
-                // Add redemption record (optional)
-                $stmt = $conn->prepare("INSERT INTO redemptions (user_id, reward, cost) VALUES (?, ?, ?)");
-                $stmt->bind_param("isi", $user_id, $reward, $cost);
+                // Add redemption record
+                $stmt = $conn->prepare("INSERT INTO redemptions (user_id, reward_id, reward_title, cost) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("iisi", $user_id, $reward_id, $reward['title'], $cost);
                 $stmt->execute();
                 
                 // Add success notification
@@ -186,14 +197,27 @@ if ($row = $result->fetch_assoc()) {
 }
 
 // Get parent info
+$parent_id = null;
 $parent_info = null;
-$stmt = $conn->prepare("SELECT username FROM users WHERE id = (SELECT parent_id FROM users WHERE id = ?)");
+$stmt = $conn->prepare("SELECT id, username FROM users WHERE id = (SELECT parent_id FROM users WHERE id = ?)");
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $parent = $result->fetch_assoc();
+    $parent_id = $parent['id'];
     $parent_info = $parent['username'];
+}
+
+// Get rewards created by parent
+$rewards = [];
+if ($parent_id) {
+    $rewardsSql = "SELECT * FROM rewards WHERE created_by = ?";
+    $stmt = $conn->prepare($rewardsSql);
+    $stmt->bind_param("i", $parent_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $rewards = $result->fetch_all(MYSQLI_ASSOC);
 }
 
 // Replace the existing checkAchievements function with this one
@@ -429,86 +453,43 @@ include 'includes/header.php';
                 <h2><i class="fas fa-gift"></i> Rewards Shop</h2>
             </div>
             <div class="card-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-gamepad"></i>
-                            Game Time
+                <?php if (count($rewards) > 0): ?>
+                    <?php foreach ($rewards as $reward): ?>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-gift"></i>
+                                    <?php echo htmlspecialchars($reward['title']); ?>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="task-points">
+                                    <i class="fas fa-coins" style="color: var(--warning);"></i>
+                                    Cost: <span class="points-badge"><?php echo $reward['points']; ?> pts</span>
+                                </div>
+                                <div class="task-description">
+                                    <?php echo htmlspecialchars($reward['description']); ?>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <form method="POST">
+                                    <input type="hidden" name="reward_id" value="<?php echo $reward['id']; ?>">
+                                    <button type="submit" name="redeem_reward" class="btn" <?php echo $_SESSION['points'] < $reward['points'] ? 'disabled' : ''; ?>>
+                                        <i class="fas fa-shopping-cart"></i> Redeem
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="card">
+                        <div class="card-body" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-gift" style="font-size: 3rem; opacity: 0.3; margin-bottom: 20px;"></i>
+                            <h3>No rewards available</h3>
+                            <p>Your parent hasn't added any rewards yet.</p>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="task-points">
-                            <i class="fas fa-coins" style="color: var(--warning);"></i>
-                            Cost: <span class="points-badge">100 pts</span>
-                        </div>
-                        <div class="task-description">
-                            30 minutes of extra game time on your favorite console
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <form method="POST">
-                            <input type="hidden" name="reward" value="game_time">
-                            <input type="hidden" name="cost" value="100">
-                            <button type="submit" name="redeem_reward" class="btn" <?php echo $_SESSION['points'] < 100 ? 'disabled' : ''; ?>>
-                                <i class="fas fa-shopping-cart"></i> Redeem
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-ice-cream"></i>
-                            Ice Cream Treat
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="task-points">
-                            <i class="fas fa-coins" style="color: var(--warning);"></i>
-                            Cost: <span class="points-badge">75 pts</span>
-                        </div>
-                        <div class="task-description">
-                            Your favorite ice cream from the local shop
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <form method="POST">
-                            <input type="hidden" name="reward" value="ice_cream">
-                            <input type="hidden" name="cost" value="75">
-                            <button type="submit" name="redeem_reward" class="btn" <?php echo $_SESSION['points'] < 75 ? 'disabled' : ''; ?>>
-                                <i class="fas fa-shopping-cart"></i> Redeem
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-film"></i>
-                            Movie Night
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="task-points">
-                            <i class="fas fa-coins" style="color: var(--warning);"></i>
-                            Cost: <span class="points-badge">150 pts</span>
-                        </div>
-                        <div class="task-description">
-                            Choose a movie for family movie night
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <form method="POST">
-                            <input type="hidden" name="reward" value="movie_night">
-                            <input type="hidden" name="cost" value="150">
-                            <button type="submit" name="redeem_reward" class="btn" <?php echo $_SESSION['points'] < 150 ? 'disabled' : ''; ?>>
-                                <i class="fas fa-shopping-cart"></i> Redeem
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
         
@@ -609,25 +590,6 @@ include 'includes/header.php';
                 }
                 // External links (like wish_list.php) will follow normally
             });
-        });
-        
-        // Handle browser back/forward navigation
-        window.addEventListener('popstate', function() {
-            const hash = window.location.hash.substring(1);
-            if (hash) {
-                document.querySelectorAll('.main-content > div[id]').forEach(section => {
-                    section.style.display = 'none';
-                });
-                document.getElementById(hash).style.display = 'block';
-                
-                // Update active link
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `dashboard_child.php${window.location.hash}`) {
-                        link.classList.add('active');
-                    }
-                });
-            }
         });
         
         // Auto-hide notifications after 3 seconds

@@ -59,6 +59,118 @@ $wishes = $conn->query("
 include 'includes/header.php';
 ?>
 
+<style>
+/* Enhanced styles for the suggestions feature */
+.suggestions-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--dark);
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+    color:white;
+}
+
+.suggestion-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.suggestion-item:hover {
+    background-color: #5d7fa7ff;
+}
+
+.suggestion-item:not(:last-child) {
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-title {
+    font-weight: 500;
+    color: #ffffffff;
+    flex: 1;
+}
+
+.suggestion-points {
+    font-size: 0.85rem;
+    color: #4a6cf7;
+    background-color: #f0f5ff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* Make sure the input field has rounded bottom corners when suggestions are visible */
+.suggestions-visible {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.1);
+}
+
+/* Add a nice header to the suggestions */
+.suggestions-header {
+    padding: 10px 15px;
+    background-color: #5d7fa7ff;
+    font-size: 0.85rem;
+    color: #6c757d;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+.suggestions-close {
+    cursor: pointer;
+    color: #4a6cf7;
+    font-weight: bold;
+}
+
+/* Scrollbar styling for suggestions */
+.suggestions-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.suggestions-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0 0 4px 0;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb {
+    background: #c2c2c2;
+    border-radius: 3px;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animation for suggestions */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.suggestions-list {
+    animation: fadeIn 0.2s ease-out;
+}
+</style>
+
 <div class="dashboard">
     <div class="sidebar">
         <div class="user-card">
@@ -201,8 +313,13 @@ include 'includes/header.php';
         <form method="POST">
             <div class="form-group">
                 <label for="title">Wish Title</label>
-                <input type="text" id="title" name="title" class="form-control" required 
-                       placeholder="What would you like?">
+                <div class="suggestions-container">
+                    <input type="text" id="title" name="title" class="form-control" required 
+                           placeholder="What would you like?">
+                    <div class="suggestions-list" id="suggestions-list">
+                        <!-- Suggestions will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
@@ -217,14 +334,106 @@ include 'includes/header.php';
 </div>
 
 <script>
+    // Wish suggestions data
+    const wishSuggestions = [
+        "New video game",
+        "Trip to the amusement park",
+        "Sleepover with friends",
+        "New bicycle",
+        "Art supplies set",
+        "Movie night with family",
+        "Special dessert",
+        "Staying up 30 minutes later",
+        "New book series",
+        "Sports equipment",
+        "Music lessons",
+        "Board game",
+        "Science kit",
+        "Cooking class",
+        "Outdoor camping experience"
+    ];
+
     // Modal functionality
     const modal = document.getElementById("addWishModal");
     const btn = document.getElementById("add-wish-btn");
     const span = document.querySelector(".close");
+    const titleInput = document.getElementById('title');
+    const suggestionsList = document.getElementById('suggestions-list');
     
     btn.onclick = () => modal.style.display = "block";
-    span.onclick = () => modal.style.display = "none";
-    window.onclick = (e) => e.target == modal ? modal.style.display = "none" : null;
+    span.onclick = () => {
+        modal.style.display = "none";
+        hideSuggestions();
+    };
+    window.onclick = (e) => {
+        if (e.target == modal) {
+            modal.style.display = "none";
+            hideSuggestions();
+        }
+    };
+    
+    // Show suggestions when title input is focused
+    titleInput.addEventListener('focus', function() {
+        showSuggestions();
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!titleInput.contains(e.target) && !suggestionsList.contains(e.target)) {
+            hideSuggestions();
+        }
+    });
+    
+    // Function to show suggestions
+    function showSuggestions() {
+        // Clear previous suggestions
+        suggestionsList.innerHTML = '';
+        
+        // Add header to suggestions
+        const header = document.createElement('div');
+        header.className = 'suggestions-header';
+        header.innerHTML = `
+            <span>Wish ideas</span>
+            <span class="suggestions-close" id="close-suggestions">×</span>
+        `;
+        suggestionsList.appendChild(header);
+        
+        // Add close event to the close button
+        document.getElementById('close-suggestions').addEventListener('click', function(e) {
+            e.stopPropagation();
+            hideSuggestions();
+        });
+        
+        // Add each suggestion to the list
+        wishSuggestions.forEach(suggestion => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            item.innerHTML = `
+                <div class="suggestion-title">${suggestion}</div>
+            `;
+            
+            // Add click event to populate the form
+            item.addEventListener('click', function() {
+                titleInput.value = suggestion;
+                hideSuggestions();
+                
+                // Auto-focus on description field for better UX
+                document.getElementById('description').focus();
+            });
+            
+            suggestionsList.appendChild(item);
+        });
+        
+        // Show the suggestions
+        suggestionsList.style.display = 'block';
+        titleInput.classList.add('suggestions-visible');
+    }
+    
+    // Function to hide suggestions
+    function hideSuggestions() {
+        suggestionsList.style.display = 'none';
+        titleInput.classList.remove('suggestions-visible');
+    }
 </script>
 
 <?php include 'includes/footer.php'; ?>

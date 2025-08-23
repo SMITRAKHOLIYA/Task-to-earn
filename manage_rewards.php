@@ -110,6 +110,118 @@ if ($result->num_rows > 0) {
 }
 ?>
 
+<style>
+/* Enhanced styles for the suggestions feature */
+.suggestions-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--dark);
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+    color:white;
+}
+
+.suggestion-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.suggestion-item:hover {
+    background-color: #5d7fa7ff;
+}
+
+.suggestion-item:not(:last-child) {
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-title {
+    font-weight: 500;
+    color: #ffffffff;
+    flex: 1;
+}
+
+.suggestion-points {
+    font-size: 0.85rem;
+    color: #4a6cf7;
+    background-color: #f0f5ff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* Make sure the input field has rounded bottom corners when suggestions are visible */
+.suggestions-visible {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.1);
+}
+
+/* Add a nice header to the suggestions */
+.suggestions-header {
+    padding: 10px 15px;
+    background-color: #5d7fa7ff;
+    font-size: 0.85rem;
+    color: #6c757d;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+.suggestions-close {
+    cursor: pointer;
+    color: #4a6cf7;
+    font-weight: bold;
+}
+
+/* Scrollbar styling for suggestions */
+.suggestions-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.suggestions-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0 0 4px 0;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb {
+    background: #c2c2c2;
+    border-radius: 3px;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animation for suggestions */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.suggestions-list {
+    animation: fadeIn 0.2s ease-out;
+}
+</style>
+
 <div class="dashboard">
     <div class="sidebar">
         <div class="user-card">
@@ -246,8 +358,13 @@ if ($result->num_rows > 0) {
         <form method="POST" id="reward-form">
             <div class="form-group">
                 <label for="title">Title *</label>
-                <input type="text" id="title" name="title" class="form-control" required 
-                       placeholder="Reward title" value="<?php echo htmlspecialchars($title); ?>">
+                <div class="suggestions-container">
+                    <input type="text" id="title" name="title" class="form-control" required 
+                           placeholder="Reward title" value="<?php echo htmlspecialchars($title); ?>">
+                    <div class="suggestions-list" id="suggestions-list">
+                        <!-- Suggestions will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="description">Description *</label>
@@ -265,10 +382,27 @@ if ($result->num_rows > 0) {
 </div>
 
 <script>
+    // Reward suggestions data
+    const rewardSuggestions = [
+        { title: "Extra screen time (30 minutes)", points: 50 },
+        { title: "Choose a movie for family night", points: 100 },
+        { title: "Stay up 30 minutes later", points: 60 },
+        { title: "Pick a special dessert", points: 70 },
+        { title: "One-time skip on a chore", points: 100 },
+        { title: "Special one-on-one time with parent", points: 80 },
+        { title: "New book of choice", points: 100 },
+        { title: "Trip to the park", points: 150 },
+        { title: "Favorite home-cooked meal", points: 120 },
+        { title: "Small toy or game", points: 200 }
+    ];
+
     // Modal functionality
     const modal = document.getElementById("addRewardModal");
     const btn = document.getElementById("add-reward-btn");
     const span = document.getElementsByClassName("close")[0];
+    const titleInput = document.getElementById('title');
+    const pointsInput = document.getElementById('points');
+    const suggestionsList = document.getElementById('suggestions-list');
     
     btn.onclick = function() {
         modal.style.display = "block";
@@ -276,12 +410,79 @@ if ($result->num_rows > 0) {
     
     span.onclick = function() {
         modal.style.display = "none";
+        hideSuggestions();
     }
     
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
+            hideSuggestions();
         }
+    }
+    
+    // Show suggestions when title input is focused
+    titleInput.addEventListener('focus', function() {
+        showSuggestions();
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!titleInput.contains(e.target) && !suggestionsList.contains(e.target)) {
+            hideSuggestions();
+        }
+    });
+    
+    // Function to show suggestions
+    function showSuggestions() {
+        // Clear previous suggestions
+        suggestionsList.innerHTML = '';
+        
+        // Add header to suggestions
+        const header = document.createElement('div');
+        header.className = 'suggestions-header';
+        header.innerHTML = `
+            <span>Reward suggestions</span>
+            <span class="suggestions-close" id="close-suggestions">×</span>
+        `;
+        suggestionsList.appendChild(header);
+        
+        // Add close event to the close button
+        document.getElementById('close-suggestions').addEventListener('click', function(e) {
+            e.stopPropagation();
+            hideSuggestions();
+        });
+        
+        // Add each suggestion to the list
+        rewardSuggestions.forEach(suggestion => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            item.innerHTML = `
+                <div class="suggestion-title">${suggestion.title}</div>
+                <div class="suggestion-points">${suggestion.points} pts</div>
+            `;
+            
+            // Add click event to populate the form
+            item.addEventListener('click', function() {
+                titleInput.value = suggestion.title;
+                pointsInput.value = suggestion.points;
+                hideSuggestions();
+                
+                // Auto-focus on description field for better UX
+                document.getElementById('description').focus();
+            });
+            
+            suggestionsList.appendChild(item);
+        });
+        
+        // Show the suggestions
+        suggestionsList.style.display = 'block';
+        titleInput.classList.add('suggestions-visible');
+    }
+    
+    // Function to hide suggestions
+    function hideSuggestions() {
+        suggestionsList.style.display = 'none';
+        titleInput.classList.remove('suggestions-visible');
     }
     
     // Form validation
